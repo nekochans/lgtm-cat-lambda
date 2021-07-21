@@ -21,6 +21,7 @@ AWS Lambda + Goで実装しています。
 export DEPLOY_STAGE=デプロイステージを設定、デフォルトは dev
 export REGION=AWSのリージョンを指定、例えば ap-northeast-1 等
 export TRIGGER_BUCKET_NAME=Lambda関数実行のトリガーとなるS3バケット名を指定
+export AWS_PROFILE=AWSのProfileを指定
 ```
 
 ### デプロイ

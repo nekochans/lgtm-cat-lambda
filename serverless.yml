@@ -10,7 +10,7 @@ provider:
   runtime: go1.x
   stage: ${env:DEPLOY_STAGE}
   region: ${env:REGION}
-  profile: ${self:custom.profiles.${self:provider.stage}}
+  profile: ${env:AWS_PROFILE}
   logRetentionInDays: 3
   lambdaHashingVersion: 20201221
   iam:
@@ -27,8 +27,6 @@ provider:
 
 custom:
   defaultStage: stg
-  profiles:
-    stg: lgtm-cat
   prune:
     automatic: true
     number: 1

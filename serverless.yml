@@ -34,9 +34,8 @@ custom:
     number: 1
 
 package:
-  exclude:
-    - ./**
-  include:
+  patterns:
+    - '!./**'
     - ./bin/**
 
 functions:

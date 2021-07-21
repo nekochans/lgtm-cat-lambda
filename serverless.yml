@@ -24,8 +24,6 @@ provider:
     DEPLOY_STAGE: ${env:DEPLOY_STAGE}
     TRIGGER_BUCKET_NAME: ${env:TRIGGER_BUCKET_NAME}
     REGION: ${env:REGION}
-  httpApi:
-    cors: true
 
 custom:
   defaultStage: stg

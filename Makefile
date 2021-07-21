@@ -1,7 +1,7 @@
 .PHONY: build clean deploy format
 
 build:
-	GOOS=linux GOARCH=amd64 go build -o bin/generatelgtmimage ./cmd/lambda/generateLgtmImage/main.go
+	GOOS=linux GOARCH=amd64 go build -o bin/generatelgtmimage ./cmd/lambda/generatelgtmimage/main.go
 
 clean:
 	rm -rf ./bin

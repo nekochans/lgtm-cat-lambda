@@ -1,0 +1,12 @@
+{
+  "name": "lgtm-cat-lambda",
+  "version": "1.0.0",
+  "scripts": {
+    "deploy": "serverless deploy -v",
+    "remove": "serverless remove -v"
+  },
+  "devDependencies": {
+    "serverless": "^2.52.0",
+    "serverless-prune-plugin": "^1.5.1"
+  }
+}

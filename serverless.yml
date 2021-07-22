@@ -1,0 +1,48 @@
+service: lgtm-cat-lambda
+
+frameworkVersion: '>=2.0.0 <3.0.0'
+
+plugins:
+  - serverless-prune-plugin
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: ${env:DEPLOY_STAGE}
+  region: ${env:REGION}
+  profile: ${env:AWS_PROFILE}
+  logRetentionInDays: 3
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:*
+          Resource: "*"
+  environment:
+    DEPLOY_STAGE: ${env:DEPLOY_STAGE}
+    TRIGGER_BUCKET_NAME: ${env:TRIGGER_BUCKET_NAME}
+    REGION: ${env:REGION}
+
+custom:
+  defaultStage: stg
+  prune:
+    automatic: true
+    number: 1
+
+package:
+  patterns:
+    - '!./**'
+    - ./bin/**
+
+functions:
+  generateLgtmImage:
+    handler: bin/generatelgtmimage
+    events:
+      - s3:
+          bucket: ${env:TRIGGER_BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: tmp/
+          existing: true

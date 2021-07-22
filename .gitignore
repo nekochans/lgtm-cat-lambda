@@ -13,3 +13,21 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# node_modules
+node_modules
+
+# Serverless directories
+.serverless
+
+# output go build
+bin/
+packaged.yaml
+
+# env file
+.env
+.envrc
+
+# IDEA setteing
+/.idea/
+lgtm-cat-lambda.iml

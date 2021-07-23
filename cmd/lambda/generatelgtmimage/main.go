@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -163,8 +162,8 @@ func genLgtmImage(file *os.File) (b []byte, err error) {
 	return buf.Bytes(), nil
 }
 
-func getFileNameWithoutExt(path string) string {
-	return filepath.Base(path[:len(path)-len(filepath.Ext(path))])
+func getObjectKeyWithoutExt(path string) string {
+	return path[:len(path)-len(filepath.Ext(path))]
 }
 
 func Handler(ctx context.Context, event events.S3Event) error {
@@ -184,8 +183,7 @@ func Handler(ctx context.Context, event events.S3Event) error {
 		imgBytesBuffer := new(bytes.Buffer)
 		imgBytesBuffer.Write(imgByte)
 
-		fileNameWithoutExt := getFileNameWithoutExt(strings.ReplaceAll(key, "tmp/", ""))
-		uploadKey := fileNameWithoutExt + ".png"
+		uploadKey := getObjectKeyWithoutExt(key) + ".png"
 
 		err = uploadToS3(ctx, uploader, imgBytesBuffer, destinationBucketName, uploadKey)
 

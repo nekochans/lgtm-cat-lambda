@@ -35,6 +35,7 @@ package:
   patterns:
     - '!./**'
     - ./bin/**
+    - ./fonts/**
 
 functions:
   generateLgtmImage:

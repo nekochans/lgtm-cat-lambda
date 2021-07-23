@@ -3,7 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
-	"io"
+	"image"
+	"image/color"
 	"log"
 	"os"
 	"path/filepath"
@@ -15,11 +16,22 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/disintegration/imaging"
+	"github.com/fogleman/gg"
 )
 
-var downloader *manager.Downloader
-var uploader *manager.Uploader
-var destinationBucketName string
+const (
+	lgtmFonts = 60
+	eouFonts  = 30
+	lgtmText  = "LGTM"
+	meowText  = "eow"
+)
+
+var (
+	downloader            *manager.Downloader
+	uploader              *manager.Uploader
+	destinationBucketName string
+)
 
 func init() {
 	region := os.Getenv("REGION")
@@ -76,12 +88,10 @@ func uploadToS3(
 	bucket string,
 	key string,
 ) error {
-	contentType := decideS3ContentType(key)
-
 	input := &s3.PutObjectInput{
 		Bucket:      aws.String(bucket),
 		Body:        imgBytesBuffer,
-		ContentType: aws.String(contentType),
+		ContentType: aws.String("image/png"),
 		Key:         aws.String(key),
 	}
 
@@ -94,34 +104,67 @@ func uploadToS3(
 	return nil
 }
 
-func extractImageExtension(fileName string) string {
-	// 許可されている画像拡張子
-	allowedImageExtList := [...]string{".jpg", ".jpeg", ".png"}
+func genLgtmImage(file *os.File) (b []byte, err error) {
 
-	ext := filepath.Ext(fileName)
-
-	for _, v := range allowedImageExtList {
-		if ext == v {
-			return v
-		}
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return nil, err
 	}
 
-	return ""
+	rct := img.Bounds()
+	// Width > Height
+	if rct.Dx() > rct.Dy() {
+		// Resize the cropped image to width = 400px preserving the aspect ratio.
+		img = imaging.Resize(img, 400, 0, imaging.Lanczos)
+	} else {
+		// Resize the cropped image to Height = 400px preserving the aspect ratio.
+		img = imaging.Resize(img, 0, 400, imaging.Lanczos)
+	}
+
+	resizedRct := img.Bounds()
+	dc := gg.NewContext(resizedRct.Dx(), resizedRct.Dy())
+	dc.DrawImage(img, 0, 0)
+
+	fontPath := filepath.Join("fonts", "MPLUSRounded1c-Medium.ttf")
+	dc.SetColor(color.White)
+
+	// for 'LGTM'
+	if err := dc.LoadFontFace(fontPath, lgtmFonts); err != nil {
+		return nil, err
+	}
+	textWidth, textHeight := dc.MeasureString(lgtmText)
+
+	// for 'eow'
+	if err := dc.LoadFontFace(fontPath, eouFonts); err != nil {
+		return nil, err
+	}
+	eowTextWidth, _ := dc.MeasureString(meowText)
+
+	x := (float64(dc.Width()) - (textWidth + eowTextWidth)) / 2
+	y := (float64(dc.Height()) / 2) + (textHeight / 2)
+
+	// for 'LGTM'
+	if err := dc.LoadFontFace(fontPath, lgtmFonts); err != nil {
+		return nil, err
+	}
+	dc.DrawString(lgtmText, x, y)
+
+	// for 'eow'
+	if err := dc.LoadFontFace(fontPath, eouFonts); err != nil {
+		return nil, err
+	}
+	dc.DrawString(meowText, x+textWidth, y)
+
+	buf := new(bytes.Buffer)
+	if err := dc.EncodePNG(buf); err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
 
-func decideS3ContentType(s3Key string) string {
-	ext := extractImageExtension(s3Key)
-
-	contentType := ""
-
-	switch ext {
-	case ".png":
-		contentType = "image/png"
-	default:
-		contentType = "image/jpeg"
-	}
-
-	return contentType
+func getFileNameWithoutExt(path string) string {
+	return filepath.Base(path[:len(path)-len(filepath.Ext(path))])
 }
 
 func Handler(ctx context.Context, event events.S3Event) error {
@@ -134,16 +177,21 @@ func Handler(ctx context.Context, event events.S3Event) error {
 			return err
 		}
 
-		imgBuffer, err := io.ReadAll(img)
+		imgByte, err := genLgtmImage(img)
 		if err != nil {
 			return err
 		}
-
-		uploadKey := strings.ReplaceAll(key, "tmp/", "")
-
 		imgBytesBuffer := new(bytes.Buffer)
-		imgBytesBuffer.Write(imgBuffer)
+		imgBytesBuffer.Write(imgByte)
+
+		fileNameWithoutExt := getFileNameWithoutExt(strings.ReplaceAll(key, "tmp/", ""))
+		uploadKey := fileNameWithoutExt + ".png"
+
 		err = uploadToS3(ctx, uploader, imgBytesBuffer, destinationBucketName, uploadKey)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

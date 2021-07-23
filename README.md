@@ -21,6 +21,7 @@ AWS Lambda + Goで実装しています。
 export DEPLOY_STAGE=デプロイステージを設定、デフォルトは dev
 export REGION=AWSのリージョンを指定、例えば ap-northeast-1 等
 export TRIGGER_BUCKET_NAME=Lambda関数実行のトリガーとなるS3バケット名を指定
+export DESTINATION_BUCKET_NAME=LGTM画像がアップロードされるS3バケット名を指定
 export AWS_PROFILE=AWSのProfileを指定
 ```
 
@@ -28,3 +29,10 @@ export AWS_PROFILE=AWSのProfileを指定
 
 1. `npm ci` を実行（初回のみでOK）
 1. `make deploy` を実行
+
+# font
+- Google Fonts を利用
+
+LGTMテキストの追加に利用しています。
+
+https://fonts.google.com/specimen/M+PLUS+Rounded+1c?preview.text_type=custom&sidebar.open=true&selection.family=Truculenta:wght@100#pairings

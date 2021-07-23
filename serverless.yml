@@ -22,7 +22,7 @@ provider:
           Resource: "*"
   environment:
     DEPLOY_STAGE: ${env:DEPLOY_STAGE}
-    TRIGGER_BUCKET_NAME: ${env:TRIGGER_BUCKET_NAME}
+    DESTINATION_BUCKET_NAME: ${env:DESTINATION_BUCKET_NAME}
     REGION: ${env:REGION}
 
 custom:
@@ -35,6 +35,7 @@ package:
   patterns:
     - '!./**'
     - ./bin/**
+    - ./fonts/**
 
 functions:
   generateLgtmImage:
@@ -44,5 +45,17 @@ functions:
           bucket: ${env:TRIGGER_BUCKET_NAME}
           event: s3:ObjectCreated:*
           rules:
-            - prefix: tmp/
+            - suffix: .png
+          existing: true
+      - s3:
+          bucket: ${env:TRIGGER_BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .jpg
+          existing: true
+      - s3:
+          bucket: ${env:TRIGGER_BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .jpeg
           existing: true

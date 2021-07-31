@@ -16,7 +16,7 @@ type User struct {
 }
 
 func Handler() {
-	host := os.Getenv("DB_READER_HOSTNAME")
+	host := os.Getenv("DB_HOSTNAME")
 	password := os.Getenv("DB_PASSWORD")
 	user := os.Getenv("DB_USERNAME")
 	dbName := os.Getenv("DB_NAME")

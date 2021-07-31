@@ -63,7 +63,7 @@ functions:
   storeLgtmImage:
     handler: bin/storelgtmimage
     environment:
-      DB_READER_HOSTNAME: ${env:DB_READER_HOSTNAME}
+      DB_READER_HOSTNAME: ${env:DB_HOSTNAME}
       DB_USERNAME: ${env:DB_USERNAME}
       DB_PASSWORD: ${env:DB_PASSWORD}
       DB_NAME: ${env:DB_NAME}

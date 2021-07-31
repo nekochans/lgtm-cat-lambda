@@ -18,11 +18,19 @@ AWS Lambda + Goで実装しています。
 [direnv](https://github.com/direnv/direnv) 等を利用して環境変数を設定します。
 
 ```
-export DEPLOY_STAGE=デプロイステージを設定、デフォルトは dev
+export DEPLOY_STAGE=デプロイステージを設定
 export REGION=AWSのリージョンを指定、例えば ap-northeast-1 等
-export TRIGGER_BUCKET_NAME=Lambda関数実行のトリガーとなるS3バケット名を指定
+export GENERATE_TRIGGER_BUCKET_NAME=generateLgtmImage Lambda関数実行のトリガーとなるS3バケット名を指定
+export STORE_TRIGGER_BUCKET_NAME=storeLgtmImage Lambda関数実行のトリガーとなるS3バケット名を指定
 export DESTINATION_BUCKET_NAME=LGTM画像がアップロードされるS3バケット名を指定
 export AWS_PROFILE=AWSのProfileを指定
+export DB_HOSTNAME=DBのホスト名を指定
+export DB_USERNAME=DBのユーザー名を指定
+export DB_PASSWORD=DBのパスワードを指定
+export DB_NAME=DBのデータベース名を指定
+export SUBNET_ID_1=サブネットIDを指定
+export SUBNET_ID_2=サブネットIDを指定
+export SECURITY_GROUP_ID=Lambdaのセキュリティグループを指定
 ```
 
 ### デプロイ

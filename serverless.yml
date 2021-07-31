@@ -22,7 +22,6 @@ provider:
           Resource: "*"
   environment:
     DEPLOY_STAGE: ${env:DEPLOY_STAGE}
-    DESTINATION_BUCKET_NAME: ${env:DESTINATION_BUCKET_NAME}
     REGION: ${env:REGION}
 
 custom:
@@ -40,22 +39,44 @@ package:
 functions:
   generateLgtmImage:
     handler: bin/generatelgtmimage
+    environment:
+      DESTINATION_BUCKET_NAME: ${env:DESTINATION_BUCKET_NAME}
     events:
       - s3:
-          bucket: ${env:TRIGGER_BUCKET_NAME}
+          bucket: ${env:GENERATE_TRIGGER_BUCKET_NAME}
           event: s3:ObjectCreated:*
           rules:
             - suffix: .png
           existing: true
       - s3:
-          bucket: ${env:TRIGGER_BUCKET_NAME}
+          bucket: ${env:GENERATE_TRIGGER_BUCKET_NAME}
           event: s3:ObjectCreated:*
           rules:
             - suffix: .jpg
           existing: true
       - s3:
-          bucket: ${env:TRIGGER_BUCKET_NAME}
+          bucket: ${env:GENERATE_TRIGGER_BUCKET_NAME}
           event: s3:ObjectCreated:*
           rules:
             - suffix: .jpeg
+          existing: true
+  storeLgtmImage:
+    handler: bin/storelgtmimage
+    environment:
+      DB_READER_HOSTNAME: ${env:DB_HOSTNAME}
+      DB_USERNAME: ${env:DB_USERNAME}
+      DB_PASSWORD: ${env:DB_PASSWORD}
+      DB_NAME: ${env:DB_NAME}
+    vpc:
+      securityGroupIds:
+        - ${env:SECURITY_GROUP_ID}
+      subnetIds:
+        - ${env:SUBNET_ID_1}
+        - ${env:SUBNET_ID_2}
+    events:
+      - s3:
+          bucket: ${env:STORE_TRIGGER_BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .webp
           existing: true

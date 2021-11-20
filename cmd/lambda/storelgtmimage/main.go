@@ -30,7 +30,7 @@ func init() {
 	q = db.New(m)
 }
 
-func getFilenameWithoutExt(objectKey string) string {
+func extractFilenameWithoutExt(objectKey string) string {
 	base := filepath.Base(objectKey)
 
 	return base[:len(base)-len(filepath.Ext(base))]
@@ -41,7 +41,7 @@ func Handler(event events.S3Event) {
 	for _, record := range event.Records {
 		objectKey := record.S3.Object.Key
 		path := filepath.Dir(objectKey)
-		filenameWithoutExt := getFilenameWithoutExt(objectKey)
+		filenameWithoutExt := extractFilenameWithoutExt(objectKey)
 
 		// create LgtmImages
 		ctx := context.Background()

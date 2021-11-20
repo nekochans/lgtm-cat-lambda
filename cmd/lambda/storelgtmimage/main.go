@@ -23,11 +23,11 @@ func init() {
 
 	var err error
 	dataSourceName := user + ":" + password + "@tcp(" + host + ")/" + dbName
-	my, err := sql.Open("mysql", dataSourceName)
+	m, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	q = db.New(my)
+	q = db.New(m)
 }
 
 func getFilenameWithoutExt(objectKey string) string {

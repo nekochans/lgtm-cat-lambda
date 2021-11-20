@@ -33,6 +33,16 @@ export SUBNET_ID_2=サブネットIDを指定
 export SECURITY_GROUP_ID=Lambdaのセキュリティグループを指定
 ```
 
+### sqlc によるコード生成
+
+[sqlc](https://github.com/kyleconroy/sqlc) を利用して SQL ファイルから Go のコードを生成します。
+
+スキーマやクエリを変更した場合、 下記のコマンドを実行してください。
+
+```shell
+make genarate
+```
+
 ### デプロイ
 
 1. `npm ci` を実行（初回のみでOK）

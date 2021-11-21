@@ -1,46 +1,60 @@
 package main
 
 import (
+	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	_ "github.com/go-sql-driver/mysql"
+	db "github.com/nekochans/lgtm-cat-lambda/db/sqlc"
 )
 
-type User struct {
-	id   int
-	name string
-}
+var q *db.Queries
 
-func Handler() {
+func init() {
 	host := os.Getenv("DB_HOSTNAME")
 	password := os.Getenv("DB_PASSWORD")
 	user := os.Getenv("DB_USERNAME")
 	dbName := os.Getenv("DB_NAME")
 
+	var err error
 	dataSourceName := user + ":" + password + "@tcp(" + host + ")/" + dbName
-	db, err := sql.Open("mysql", dataSourceName)
+	m, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	q = db.New(m)
+}
 
-	rows, err := db.Query(`select id, name from user`)
+func extractFilenameWithoutExt(objectKey string) string {
+	base := filepath.Base(objectKey)
 
-	var userResult []User
-	for rows.Next() {
-		user := User{}
-		if err := rows.Scan(&user.id, &user.name); err != nil {
+	return base[:len(base)-len(filepath.Ext(base))]
+}
+
+func Handler(event events.S3Event) {
+
+	for _, record := range event.Records {
+		objectKey := record.S3.Object.Key
+		path := filepath.Dir(objectKey)
+		filenameWithoutExt := extractFilenameWithoutExt(objectKey)
+
+		// create LgtmImages
+		ctx := context.Background()
+
+		param := db.CreateLgtmImagesParams{
+			Path:     path,
+			Filename: filenameWithoutExt,
+		}
+
+		_, err := q.CreateLgtmImages(ctx, param)
+		if err != nil {
 			log.Fatal(err)
 		}
-		userResult = append(userResult, user)
-	}
-
-	for _, u := range userResult {
-		fmt.Println(u)
 	}
 }
 

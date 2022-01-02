@@ -8,4 +8,4 @@ CREATE TABLE `lgtm_images`
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_lgtm_images_01` (`filename`),
     KEY          `idx_lgtm_images_01` (`path`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin ROW_FORMAT=DYNAMIC;
+);

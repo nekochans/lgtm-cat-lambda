@@ -6,7 +6,7 @@
     "remove": "serverless remove -v"
   },
   "devDependencies": {
-    "serverless": "^2.52.0",
+    "serverless": "^2.72.4",
     "serverless-prune-plugin": "^1.5.1"
   }
 }

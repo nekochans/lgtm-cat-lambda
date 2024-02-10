@@ -22,7 +22,7 @@ func init() {
 	dbName := os.Getenv("DB_NAME")
 
 	var err error
-	dataSourceName := user + ":" + password + "@tcp(" + host + ")/" + dbName
+	dataSourceName := user + ":" + password + "@tcp(" + host + ")/" + dbName + "?tls=true"
 	m, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Fatal(err)

@@ -67,12 +67,6 @@ functions:
       DB_USERNAME: ${env:DB_USERNAME}
       DB_PASSWORD: ${env:DB_PASSWORD}
       DB_NAME: ${env:DB_NAME}
-    vpc:
-      securityGroupIds:
-        - ${env:SECURITY_GROUP_ID}
-      subnetIds:
-        - ${env:SUBNET_ID_1}
-        - ${env:SUBNET_ID_2}
     events:
       - s3:
           bucket: ${env:STORE_TRIGGER_BUCKET_NAME}
